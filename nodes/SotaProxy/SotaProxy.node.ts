@@ -40,7 +40,6 @@ export class SotaProxy implements INodeType {
 				],
 				default: 'account',
 			},
-
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -65,7 +64,6 @@ export class SotaProxy implements INodeType {
 				],
 				default: 'getBalance',
 			},
-
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -90,7 +88,6 @@ export class SotaProxy implements INodeType {
 				],
 				default: 'listProducts',
 			},
-
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -119,8 +116,7 @@ export class SotaProxy implements INodeType {
 					{
 						name: 'Create',
 						value: 'create',
-						description:
-							'Buy and provision proxies, charging your prepaid balance. Requires a key with the "trade" scope',
+						description: 'Buy and provision proxies, charging your prepaid balance. Requires a key with the "trade" scope.',
 						action: 'Create an order',
 						routing: {
 							request: {
@@ -160,7 +156,6 @@ export class SotaProxy implements INodeType {
 				],
 				default: 'quote',
 			},
-
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -205,7 +200,6 @@ export class SotaProxy implements INodeType {
 				],
 				default: 'list',
 			},
-
 			{
 				displayName: 'Product',
 				name: 'product',
