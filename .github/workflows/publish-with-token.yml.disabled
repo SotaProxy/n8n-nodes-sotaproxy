@@ -1,0 +1,33 @@
+# FALLBACK: token-based publishing.
+#
+# Trusted Publishing is configured in the settings of an EXISTING package,
+# so the very first publish of a brand-new package may still need a token.
+# Use this file for that first release, then switch back to publish.yml
+# and delete the NPM_TOKEN secret.
+#
+# To activate: rename this file to publish.yml (replacing the OIDC one),
+# and add an npm Granular Access or Automation token as the repository
+# secret NPM_TOKEN.
+
+name: Publish to npm (token)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.14'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

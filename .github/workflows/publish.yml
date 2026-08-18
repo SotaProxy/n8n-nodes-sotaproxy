@@ -1,0 +1,58 @@
+# Publishes n8n-nodes-sotaproxy to npm using Trusted Publishing (OIDC).
+#
+# No NPM_TOKEN secret is needed. On each run GitHub mints a short-lived,
+# signed OIDC token; npm verifies it against the Trusted Publisher rule
+# configured in the package settings on npmjs.com.
+#
+# One-time setup on npmjs.com:
+#   Packages -> n8n-nodes-sotaproxy -> Settings -> Trusted publishing
+#   Provider:          GitHub Actions
+#   Organization/user: SotaProxy          (case-sensitive)
+#   Repository:        n8n-nodes-sotaproxy
+#   Workflow filename: publish.yml        (must match exactly)
+#
+# Note: `registry-url` is deliberately NOT set on setup-node. It makes
+# setup-node write an `_authToken=` line into .npmrc; with no token that
+# line is empty, npm treats auth as "already configured", skips the OIDC
+# exchange and fails with ENEEDAUTH. The default registry is npmjs.org
+# anyway, so omitting it is both safe and necessary here.
+#
+# Provenance is generated automatically under Trusted Publishing, so the
+# --provenance flag is not required.
+
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest        # self-hosted runners are not supported for OIDC
+    permissions:
+      contents: read
+      id-token: write             # required: lets GitHub mint the OIDC token
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.14'   # OIDC publishing needs Node >= 22.14
+
+      - name: Upgrade npm
+        run: npm install -g npm@latest    # OIDC publishing needs npm >= 11.5.1
+
+      - name: Show toolchain
+        run: |
+          node -v
+          npm -v
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish
+        run: npm publish --access public
